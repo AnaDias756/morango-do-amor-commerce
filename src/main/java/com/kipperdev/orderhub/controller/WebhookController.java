@@ -35,35 +35,45 @@ public class WebhookController {
             @RequestHeader(value = "X-Abacate-Signature", required = false) String signature) {
         
         try {
-            log.info("Recebido webhook do Abacate Pay: event={}, chargeId={}, orderId={}, status={}", 
-                webhook.getEvent(), webhook.getChargeId(), webhook.getOrderId(), webhook.getStatus());
+            String billingId = webhook.getData() != null && webhook.getData().getBilling() != null ? 
+                webhook.getData().getBilling().getId() : "unknown";
+            String status = webhook.getData() != null && webhook.getData().getBilling() != null ? 
+                webhook.getData().getBilling().getStatus() : "unknown";
+                
+            log.info("Recebido webhook do Abacate Pay: event={}, billingId={}, status={}", 
+                webhook.getEvent(), billingId, status);
             
             if (signatureValidationEnabled && !validateSignature(webhook, signature)) {
                 log.warn("Assinatura inválida no webhook do Abacate Pay");
                 return ResponseEntity.badRequest().body("Invalid signature");
             }
             
-            switch (webhook.getEvent().toLowerCase()) {
-                case "payment.completed":
-                case "payment.paid":
-                    orderService.updateOrderFromAbacateWebhook(webhook.getChargeId(), "PAID");
-                    break;
-                    
-                case "payment.failed":
-                case "payment.cancelled":
-                    orderService.updateOrderFromAbacateWebhook(webhook.getChargeId(), "FAILED");
-                    break;
-                    
-                case "payment.pending":
-                    orderService.updateOrderFromAbacateWebhook(webhook.getChargeId(), "PENDING");
-                    break;
-                    
-                default:
-                    log.info("Evento de webhook não processado: {}", webhook.getEvent());
-                    break;
+            if (webhook.getData() != null && webhook.getData().getBilling() != null) {
+                billingId = webhook.getData().getBilling().getId();
+                
+                switch (webhook.getEvent().toLowerCase()) {
+                    case "billing.paid":
+                        orderService.updateOrderFromAbacateWebhook(billingId, "PAID");
+                        break;
+                        
+                    case "billing.failed":
+                    case "billing.cancelled":
+                        orderService.updateOrderFromAbacateWebhook(billingId, "FAILED");
+                        break;
+                        
+                    case "billing.pending":
+                        orderService.updateOrderFromAbacateWebhook(billingId, "PENDING");
+                        break;
+                        
+                    default:
+                        log.info("Evento de webhook não processado: {}", webhook.getEvent());
+                        break;
+                }
+            } else {
+                log.warn("Webhook recebido sem dados de billing válidos");
             }
             
-            log.info("Webhook do Abacate Pay processado com sucesso: chargeId={}", webhook.getChargeId());
+            log.info("Webhook do Abacate Pay processado com sucesso: billingId={}", billingId);
             return ResponseEntity.ok("Webhook processed successfully");
             
         } catch (Exception e) {
@@ -78,7 +88,11 @@ public class WebhookController {
         }
         
         try {
-            String payload = webhook.getEvent() + webhook.getChargeId() + webhook.getStatus();
+            String billingId = webhook.getData() != null && webhook.getData().getBilling() != null ? 
+                webhook.getData().getBilling().getId() : "";
+            String status = webhook.getData() != null && webhook.getData().getBilling() != null ? 
+                webhook.getData().getBilling().getStatus() : "";
+            String payload = webhook.getEvent() + billingId + status;
             
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(webhookSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");

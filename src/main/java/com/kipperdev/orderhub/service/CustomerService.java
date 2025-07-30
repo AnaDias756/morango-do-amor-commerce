@@ -25,11 +25,12 @@ public class CustomerService {
         
         if (existingCustomer.isPresent()) {
             Customer customer = existingCustomer.get();
-            // Atualizar dados se necessário
             if (!customer.getName().equals(customerDTO.getName()) || 
-                !customer.getPhone().equals(customerDTO.getPhone())) {
+                !customer.getPhone().equals(customerDTO.getPhone()) ||
+                !customer.getDocument().equals(customerDTO.getDocument())) {
                 customer.setName(customerDTO.getName());
                 customer.setPhone(customerDTO.getPhone());
+                customer.setDocument(customerDTO.getDocument());
                 customer = customerRepository.save(customer);
                 log.info("Cliente atualizado: {}", customer.getEmail());
             }

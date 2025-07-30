@@ -30,6 +30,10 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NotBlank(message = "Documento é obrigatório")
+    @Column(nullable = false, unique = true)
+    private String document;
+
     @NotBlank(message = "Telefone é obrigatório")
     @Column(nullable = false)
     private String phone;

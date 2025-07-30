@@ -68,11 +68,11 @@ feign:
 # Abacate Pay Configuration
 abacate:
   api:
-    base-url: https://api.abacatepay.com
-    token: ${ABACATE_API_TOKEN:mock-token}
-    mock-enabled: ${ABACATE_MOCK_ENABLED:true}
+    base-url: ${ABACATE_API_BASE_URL:https://api.abacatepay.com}
+    token: ${ABACATE_API_TOKEN:}
+    mock-enabled: ${ABACATE_API_MOCK_ENABLED:true}
   webhook:
-    secret: ${ABACATE_WEBHOOK_SECRET:default-secret}
+    secret: ${ABACATE_WEBHOOK_SECRET:}
     signature:
       enabled: ${ABACATE_WEBHOOK_SIGNATURE_ENABLED:false}
 
@@ -112,10 +112,6 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-
-abacate:
-  api:
-    mock-enabled: true
 
 logging:
   level:
@@ -169,10 +165,10 @@ spring:
 
 abacate:
   api:
-    mock-enabled: false
+    mock-enabled: ${ABACATE_API_MOCK_ENABLED:false}
   webhook:
     signature:
-      enabled: true
+      enabled: ${ABACATE_WEBHOOK_SIGNATURE_ENABLED:true}
 
 logging:
   level:
@@ -205,10 +201,10 @@ spring:
 
 abacate:
   api:
-    mock-enabled: ${ABACATE_MOCK_ENABLED:true}
+    mock-enabled: ${ABACATE_API_MOCK_ENABLED:true}
   webhook:
     signature:
-      enabled: false
+      enabled: ${ABACATE_WEBHOOK_SIGNATURE_ENABLED:false}
 
 logging:
   level:

@@ -16,6 +16,9 @@ public class CustomerDTO {
     @NotBlank(message = "Nome é obrigatório")
     private String name;
 
+    @NotBlank(message = "Documento é obrigatório")
+    private String document;
+
     @Email(message = "Email deve ter formato válido")
     @NotBlank(message = "Email é obrigatório")
     private String email;
