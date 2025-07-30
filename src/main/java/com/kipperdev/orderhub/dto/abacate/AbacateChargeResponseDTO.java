@@ -12,28 +12,51 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AbacateChargeResponseDTO {
-
-    private String id;
-    private Integer amount;
-    private String status;
-    private String frequency;
-    private List<String> kind;
     
-    @JsonProperty("returnUrl")
-    private String returnUrl;
+    private String error;
+    private AbacateChargeDataDTO data;
     
-    @JsonProperty("completionUrl")
-    private String completionUrl;
-    
-    @JsonProperty("url")
-    private String paymentLink;
-    
-    @JsonProperty("createdAt")
-    private LocalDateTime createdAt;
-    
-    @JsonProperty("paidAt")
-    private LocalDateTime paidAt;
-    
-    private AbacateCustomerDTO customer;
-    private List<AbacateChargeRequestDTO.AbacateProductDTO> products;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AbacateChargeDataDTO {
+        private String id;
+        private Integer amount;
+        private String status;
+        private String frequency;
+        @JsonProperty("devMode")
+        private Boolean devMode;
+        private List<String> methods;
+        @JsonProperty("allowCoupons")
+        private Boolean allowCoupons;
+        private List<Object> coupons;
+        @JsonProperty("couponsUsed")
+        private List<Object> couponsUsed;
+        private String url;
+        @JsonProperty("createdAt")
+        private LocalDateTime createdAt;
+        @JsonProperty("updatedAt")
+        private LocalDateTime updatedAt;
+        private List<AbacateProductResponseDTO> products;
+        private AbacateChargeMetadataDTO metadata;
+        private AbacateCustomerResponseDTO.AbacateCustomerMetadataDTO customer;
+        
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class AbacateProductResponseDTO {
+            private String id;
+            private String externalId;
+            private Integer quantity;
+        }
+        
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class AbacateChargeMetadataDTO {
+            private Integer fee;
+            private String returnUrl;
+            private String completionUrl;
+        }
+    }
 }

@@ -22,7 +22,7 @@ public class AbacateChargeRequestDTO {
     @JsonProperty("completionUrl")
     private String completionUrl;
     
-    private AbacateCustomerDTO.AbacateCustomerMetadataDTO customer;
+    private AbacateCustomerDTO customer;
 
     @JsonProperty("customerId")
     private String abacateCustomerId;
