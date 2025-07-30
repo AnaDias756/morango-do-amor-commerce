@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.kipperdev.orderhub.dto.abacate.AbacateChargeResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.kipperdev.orderhub.client.AbacatePayClient;
 import com.kipperdev.orderhub.dto.abacate.AbacateChargeRequestDTO;
+import com.kipperdev.orderhub.dto.abacate.AbacateChargeResponseDTO;
 import com.kipperdev.orderhub.dto.abacate.AbacateCustomerDTO;
 import com.kipperdev.orderhub.dto.abacate.AbacateCustomerResponseDTO;
 import com.kipperdev.orderhub.entity.Order;
@@ -166,7 +166,7 @@ public class AbacatePayService {
                 Order order = orderOpt.get();
                 OrderStatus newStatus = mapAbacateStatusToOrderStatus(status, event);
                 
-                if (newStatus != null && !newStatus.equals(order.getStatus())) {
+                if (!newStatus.equals(order.getStatus())) {
                     order.setStatus(newStatus);
                     if (newStatus == OrderStatus.PAID) {
                         order.setPaidAt(LocalDateTime.now());
