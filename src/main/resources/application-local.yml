@@ -1,0 +1,98 @@
+# Local Profile Configuration
+# AbacatePay enabled, local Kafka, database via query strings
+spring:
+  application:
+    name: orderhub
+  
+  # Database Configuration - using environment variables
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/orderhub_local?useSSL=false&serverTimezone=UTC}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME:fernandakipper}
+    password: ${DATABASE_PASSWORD:}
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  # Kafka Configuration - ENABLED for local development
+  kafka:
+    enabled: true
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: orderhub-local-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.kipperdev.orderhub.event"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  
+  # WebFlux Configuration
+  webflux:
+    base-path: /
+
+# Server Configuration
+server:
+  port: 8080
+
+# Management/Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,kafka
+  endpoint:
+    health:
+      show-details: always
+
+# Feign Client Configuration
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+        logger-level: full
+
+# Abacate Pay Configuration - ENABLED
+abacate:
+  api:
+    base-url: ${ABACATE_API_BASE_URL:https://api.abacatepay.com}
+    token: ${ABACATE_API_TOKEN}
+    mock-enabled: ${ABACATE_API_MOCK_ENABLED:false}
+  webhook:
+    secret: ${ABACATE_WEBHOOK_SECRET:abacate_webhook_secret}
+    signature:
+      enabled: ${ABACATE_WEBHOOK_SIGNATURE_ENABLED:true}
+
+# Admin Configuration
+admin:
+  username: admin
+  password: admin123
+
+# Logging Configuration
+logging:
+  level:
+    com.kipperdev.orderhub: DEBUG
+    org.springframework.kafka: DEBUG
+    org.springframework.web: INFO
+    feign: DEBUG
+    root: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application Configuration
+app:
+  base-url: http://localhost:8080
+  order:
+    status-url-template: "${app.base-url}/public/orders/{orderId}/status"

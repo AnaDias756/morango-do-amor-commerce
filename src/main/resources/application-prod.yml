@@ -1,0 +1,143 @@
+# Production Profile Configuration
+# All connections via environment variables
+spring:
+  application:
+    name: orderhub
+  
+  # Database Configuration - using environment variables
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/orderhub}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME:orderhub}
+    password: ${DATABASE_PASSWORD:password}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:600000}
+      max-lifetime: ${DB_MAX_LIFETIME:1800000}
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  
+  # Kafka Configuration - using environment variables
+  kafka:
+    enabled: ${KAFKA_ENABLED:true}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:orderhub-prod-group}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.kipperdev.orderhub.event"
+        security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+        sasl.mechanism: ${KAFKA_SASL_MECHANISM:PLAIN}
+        sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+        sasl.mechanism: ${KAFKA_SASL_MECHANISM:PLAIN}
+        sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
+        acks: ${KAFKA_PRODUCER_ACKS:all}
+        retries: ${KAFKA_PRODUCER_RETRIES:3}
+        batch.size: ${KAFKA_PRODUCER_BATCH_SIZE:16384}
+        linger.ms: ${KAFKA_PRODUCER_LINGER_MS:5}
+  
+  # WebFlux Configuration
+  webflux:
+    base-path: /
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# Management/Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ACTUATOR_ENDPOINTS:health,info,metrics}
+      base-path: ${ACTUATOR_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${ACTUATOR_HEALTH_SHOW_DETAILS:when-authorized}
+  metrics:
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:false}
+
+# Feign Client Configuration
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: ${FEIGN_CONNECT_TIMEOUT:5000}
+        read-timeout: ${FEIGN_READ_TIMEOUT:10000}
+        logger-level: ${FEIGN_LOG_LEVEL:basic}
+
+# Abacate Pay Configuration - using environment variables
+abacate:
+  api:
+    base-url: ${ABACATE_API_BASE_URL:https://api.abacatepay.com}
+    token: ${ABACATE_API_TOKEN}
+    mock-enabled: ${ABACATE_API_MOCK_ENABLED:false}
+  webhook:
+    secret: ${ABACATE_WEBHOOK_SECRET}
+    signature:
+      enabled: ${ABACATE_WEBHOOK_SIGNATURE_ENABLED:true}
+
+# Admin Configuration
+admin:
+  username: ${ADMIN_USERNAME:admin}
+  password: ${ADMIN_PASSWORD}
+
+# Logging Configuration
+logging:
+  level:
+    com.kipperdev.orderhub: ${LOG_LEVEL_APP:INFO}
+    org.springframework.kafka: ${LOG_LEVEL_KAFKA:WARN}
+    org.springframework.web: ${LOG_LEVEL_WEB:WARN}
+    feign: ${LOG_LEVEL_FEIGN:WARN}
+    root: ${LOG_LEVEL_ROOT:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE_NAME:logs/orderhub.log}
+    max-size: ${LOG_FILE_MAX_SIZE:10MB}
+    max-history: ${LOG_FILE_MAX_HISTORY:30}
+
+# Application Configuration
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  order:
+    status-url-template: "${app.base-url}/public/orders/{orderId}/status"
+
+# Security Configuration
+security:
+  require-ssl: ${SECURITY_REQUIRE_SSL:false}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+    allowed-headers: ${CORS_ALLOWED_HEADERS:*}
+    allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
