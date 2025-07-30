@@ -28,7 +28,8 @@ public class KafkaConsumerService {
     @RetryableTopic(
         attempts = "3",
         backoff = @Backoff(delay = 1000, multiplier = 2.0),
-        dltStrategy = org.springframework.kafka.retrytopic.DltStrategy.FAIL_ON_ERROR
+        dltStrategy = org.springframework.kafka.retrytopic.DltStrategy.FAIL_ON_ERROR,
+        kafkaTemplate = "stringKafkaTemplate"
     )
     @KafkaListener(topics = "stock.reserved", groupId = "orderhub-stock-group")
     public void handleStockReservedEvent(
@@ -64,7 +65,8 @@ public class KafkaConsumerService {
     @RetryableTopic(
         attempts = "3",
         backoff = @Backoff(delay = 1000, multiplier = 2.0),
-        dltStrategy = org.springframework.kafka.retrytopic.DltStrategy.FAIL_ON_ERROR
+        dltStrategy = org.springframework.kafka.retrytopic.DltStrategy.FAIL_ON_ERROR,
+        kafkaTemplate = "stringKafkaTemplate"
     )
     @KafkaListener(topics = "invoice.generated", groupId = "orderhub-invoice-group")
     public void handleInvoiceGeneratedEvent(

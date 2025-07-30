@@ -119,6 +119,32 @@ logging:
     com.kipperdev.orderhub: DEBUG
 
 ---
+# Local Profile with Kafka
+spring:
+  config:
+    activate:
+      on-profile: local-kafka
+  
+  kafka:
+    enabled: true
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: orderhub-local-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.kipperdev.orderhub.event"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+logging:
+  level:
+    com.kipperdev.orderhub: DEBUG
+    org.springframework.kafka: DEBUG
+
+---
 # Test Profile
 spring:
   config:

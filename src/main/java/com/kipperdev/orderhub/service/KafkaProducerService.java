@@ -15,13 +15,17 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class KafkaProducerService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+
+    public KafkaProducerService(KafkaTemplate<String, String> stringKafkaTemplate, ObjectMapper objectMapper) {
+        this.kafkaTemplate = stringKafkaTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     private static final String ORDERS_CREATED_TOPIC = "orders.created";
     private static final String PAYMENTS_CONFIRMED_TOPIC = "payments.confirmed";

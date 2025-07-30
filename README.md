@@ -132,8 +132,11 @@ APP_BASE_URL=https://your-domain.com
 
 ### Profiles
 - **default**: Desenvolvimento com H2 e mocks habilitados
+- **local**: Desenvolvimento local sem Kafka
+- **local-kafka**: Desenvolvimento local com Kafka habilitado
 - **prod**: Produção com PostgreSQL e integrações reais
 - **test**: Testes com Kafka embarcado
+- **docker**: Execução em containers Docker
 
 ## 🚀 Execução
 
@@ -159,10 +162,27 @@ docker build -t orderhub .
 docker run -p 8080:8080 orderhub
 ```
 
-### Kafka Local (Desenvolvimento)
+### Desenvolvimento com Kafka
 ```bash
-# Usando Docker Compose
-docker-compose up -d kafka zookeeper
+# Iniciar infraestrutura Kafka
+./scripts/start-kafka-local.sh
+
+# Executar aplicação com Kafka
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local-kafka
+
+# Parar infraestrutura Kafka
+./scripts/stop-kafka-local.sh
+```
+
+**📖 Para setup detalhado do Kafka, veja: [docs/KAFKA_LOCAL_SETUP.md](docs/KAFKA_LOCAL_SETUP.md)**
+
+### Desenvolvimento sem Kafka
+```bash
+# Executar aplicação sem Kafka (padrão)
+./mvnw spring-boot:run
+
+# Ou explicitamente
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 ## 📊 Monitoramento
