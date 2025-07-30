@@ -2,12 +2,6 @@
 
 This guide explains how to set up and run Apache Kafka locally for OrderHub development, ensuring proper integration with the application.
 
-## Prerequisites
-
-- Docker and Docker Compose installed
-- Java 21+ installed
-- Maven 3.6+ installed
-
 ## Quick Start
 
 ### 1. Start Kafka Infrastructure
