@@ -139,21 +139,21 @@ public class AbacatePayService {
         return response;
     }
     
-    public AbacateChargeResponseDTO getBilling(String billingId) {
-        if (mockEnabled) {
-            AbacateChargeResponseDTO mockResponse = new AbacateChargeResponseDTO();
-            AbacateChargeResponseDTO.AbacateChargeDataDTO mockData = new AbacateChargeResponseDTO.AbacateChargeDataDTO();
-            mockData.setId(billingId);
-            mockData.setStatus("PENDING");
-            mockData.setFrequency("ONE_TIME");
-            mockData.setMethods(Arrays.asList("PIX"));
-            mockData.setCreatedAt(LocalDateTime.now());
-            return mockResponse;
-        } else {
-            AbacateChargeResponseDTO getResponse = abacatePayClient.getBilling(billingId);
-            return getResponse;
-        }
-    }
+    // public AbacateChargeResponseDTO getBilling(String billingId) {
+    //     if (mockEnabled) {
+    //         AbacateChargeResponseDTO mockResponse = new AbacateChargeResponseDTO();
+    //         AbacateChargeResponseDTO.AbacateChargeDataDTO mockData = new AbacateChargeResponseDTO.AbacateChargeDataDTO();
+    //         mockData.setId(billingId);
+    //         mockData.setStatus("PENDING");
+    //         mockData.setFrequency("ONE_TIME");
+    //         mockData.setMethods(Arrays.asList("PIX"));
+    //         mockData.setCreatedAt(LocalDateTime.now());
+    //         return mockResponse;
+    //     } else {
+    //         AbacateChargeResponseDTO getResponse = abacatePayClient.getBilling(billingId);
+    //         return getResponse;
+    //     }
+    // }
     
     public void processWebhook(String billingId, String event, String status) {
         try {
