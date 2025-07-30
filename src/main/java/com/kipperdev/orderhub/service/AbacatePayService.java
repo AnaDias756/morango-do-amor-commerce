@@ -31,10 +31,10 @@ public class AbacatePayService {
     private final OrderRepository orderRepository;
     
     @Value("${abacate.api.mock-enabled:true}")
-    private final boolean mockEnabled;
+    private boolean mockEnabled;
     
     @Value("${app.base-url:http://localhost:8080}")
-    private final String baseUrl;
+    private String baseUrl;
 
     public String createPayment(Order order) {
         try {
