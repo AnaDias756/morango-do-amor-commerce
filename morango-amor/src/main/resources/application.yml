@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: morango-amor
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/morango_amor_db
+    username: ${DB_USERNAME:morango_user}
+    password: ${DB_PASSWORD:morango123}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: America/Sao_Paulo
+  
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 1
+      buffer-memory: 33554432
+  
+  jackson:
+    time-zone: America/Sao_Paulo
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.docesamor.morangoamor: ${LOG_LEVEL:INFO}
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_PARAM_LOG_LEVEL:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/morango-amor.log
+
+# Configurações customizadas da aplicação
+app:
+  kafka:
+    topics:
+      pedido-criado: pedido-criado
+      status-atualizado: status-atualizado
+      estoque-baixo: estoque-baixo
+      webhook: webhook-events
+  
+  abacate-pay:
+    base-url: ${ABACATE_PAY_URL:https://api.abacatepay.com}
+    api-key: ${ABACATE_PAY_API_KEY:test_api_key}
+    webhook-url: ${WEBHOOK_URL:http://localhost:8080/api/webhooks/abacate-pay}
+    mock-enabled: ${MOCK_PAYMENT:true}
+  
+  business:
+    estoque-minimo-default: 5
+    tempo-preparo-default-minutos: 30
+    desconto-maximo-percent: 50
+    valor-minimo-pedido: 10.00
+    taxa-entrega-default: 5.00
+    
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
